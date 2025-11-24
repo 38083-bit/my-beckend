@@ -1,66 +1,87 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
-//const PORT = 3000;
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = 'your-secret-key';  // Change this in production
+const JWT_SECRET = 'your-secret-key'; // Change this later
 
 // Middleware
-app.use(cors());  // Allow frontend requests
-app.use(express.json());  // Parse JSON bodies
-//app.use(express.static(path.join(__dirname, 'public')));  // Serve static files (put your HTML in 'public' folder)
+app.use(cors());
+app.use(express.json());
 
-// In-memory user storage (replace with DB in production)
-let users = [
-    // Sample users (passwords are hashed for 'password123')
-    { id: 1, email: 'athlete@example.com', password: '$2a$10$example.hash.for.athlete', role: 'athlete' },
-    { id: 2, email: 'sponsor@company.com', password: '$2a$10$example.hash.for.sponsor', role: 'sponsor' }
-];
+// MongoDB Connection
+mongoose.connect("mongodb+srv://38083_db_user:Athlete2025@cluster0.9hqwsbq.mongodb.net/athleteConnectDB?retryWrites=true&w=majority&appName=Cluster0", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("MongoDB connected successfully"))
+.catch(err => console.error("MongoDB connection error:", err));
 
-// Helper to hash passwords (for future registration)
-async function hashPassword(password) {
-    return await bcrypt.hash(password, 10);
-}
+// MongoDB User Schema
+const UserSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, required: true }
+});
 
-// API Routes
+const User = mongoose.model("User", UserSchema);
+
+// 🔹 SIGNUP API
+app.post('/api/signup', async (req, res) => {
+    try {
+        const { email, password, role } = req.body;
+
+        if (!['athlete', 'sponsor'].includes(role)) {
+            return res.status(400).json({ message: "Invalid role" });
+        }
+
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.status(409).json({ message: "User already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await User.create({ email, password: hashedPassword, role });
+
+        res.json({ message: "Signup successful! Please login." });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// 🔹 LOGIN API
 app.post('/api/login/:role', async (req, res) => {
-    const { role } = req.params;
-    const { email, password } = req.body;
+    try {
+        const { role } = req.params;
+        const { email, password } = req.body;
 
-    // Validate role
-    if (!['athlete', 'sponsor'].includes(role)) {
-        return res.status(400).json({ message: 'Invalid role' });
+        const user = await User.findOne({ email, role });
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        const validPass = await bcrypt.compare(password, user.password);
+        if (!validPass) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, role: user.role },
+            JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.json({ message: "Login successful", token });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
     }
-
-    // Find user
-    const user = users.find(u => u.email === email && u.role === role);
-    if (!user) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-
-    res.json({ message: 'Login successful', token });
 });
 
-// Serve the main HTML file
-//app.get('/', (req, res) => {
-//    res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Assuming your HTML is named 'index.html'
-//});
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-
-});
+// Start Server
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
