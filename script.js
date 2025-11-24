@@ -8,7 +8,7 @@ function showSelection() {
     document.getElementById("signup-form").style.display = "none";
     document.getElementById("athlete-form").style.display = "none";
     document.getElementById("sponsor-form").style.display = "none";
-    document.getElementById("role-selection").style.display = "block";
+    document.getElementById("selection-view").style.display = "block";
 }
 
 async function handleSignup(event) {

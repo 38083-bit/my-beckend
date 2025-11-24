@@ -27,32 +27,32 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, required: true }
 });
 
-const User = mongoose.model("User", UserSchema);
+//const User = mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 // 🔹 SIGNUP API
+//const User = require("./models/User");
+
 app.post('/api/signup', async (req, res) => {
-    try {
-        const { email, password, role } = req.body;
+    const { email, password, role } = req.body;
 
-        if (!['athlete', 'sponsor'].includes(role)) {
-            return res.status(400).json({ message: "Invalid role" });
-        }
-
-        const existing = await User.findOne({ email });
-        if (existing) {
-            return res.status(409).json({ message: "User already exists" });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await User.create({ email, password: hashedPassword, role });
-
-        res.json({ message: "Signup successful! Please login." });
-
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+    if (!['athlete', 'sponsor'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role' });
     }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(409).json({ message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ email, password: hashedPassword, role });
+    await newUser.save();
+
+    res.json({ message: 'Signup successful! Please login.' });
 });
+
 
 // 🔹 LOGIN API
 app.post('/api/login/:role', async (req, res) => {
