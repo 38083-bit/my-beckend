@@ -626,29 +626,65 @@
                     </form>
                 </div>
                 <!-- Signup Form -->
-                <div id="signup-form" class="login-form">
-                    <button class="back-btn" onclick="showSelection()">← Back to selection</button>
-                    <h2>Sign Up</h2>
-                    <form onsubmit="handleSignup(event)">
-                        <div class="form-group">
-                            <label for="signup-email">Email</label>
-                            <input type="email" id="signup-email" name="email" required placeholder="you@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-password">Password</label>
-                            <input type="password" id="signup-password" name="password" required placeholder="Enter your password">
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-role">Role</label>
-                            <select id="signup-role" name="role" required>
-                                <option value="" disabled selected>Select a role</option>
-                                <option value="athlete">Athlete</option>
-                                <option value="sponsor">Sponsor</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
-                    </form>
-                </div>
+<div id="signup-form" class="login-form">
+    <button class="back-btn" onclick="showSelection()">← Back to selection</button>
+    <h2>Sign Up</h2>
+    <form onsubmit="handleSignup(event)">
+        <!-- Name -->
+        <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <input type="text" id="signup-name" name="name" required placeholder="Your full name">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" name="email" required placeholder="you@example.com">
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" name="password" required placeholder="Enter your password">
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group">
+            <label for="signup-dob">Date of Birth</label>
+            <input type="date" id="signup-dob" name="dob" required>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+            <label for="signup-gender">Gender</label>
+            <select id="signup-gender" name="gender" required>
+                <option value="" disabled selected>Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <!-- Contact Number -->
+        <div class="form-group">
+            <label for="signup-contact">Contact Number</label>
+            <input type="tel" id="signup-contact" name="contact" required placeholder="123-456-7890">
+        </div>
+
+        <!-- Role -->
+        <div class="form-group">
+            <label for="signup-role">Role</label>
+            <select id="signup-role" name="role" required>
+                <option value="" disabled selected>Select a role</option>
+                <option value="athlete">Athlete</option>
+                <option value="sponsor">Sponsor</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+    </form>
+</div>
+
             </div>
         </div>
     </div>
@@ -664,7 +700,8 @@
             <p><strong>Role:</strong> <span id="profile-role"></span></p>
             <p><strong>Name:</strong> <span id="profile-name"></span></p>
             <p><strong>Date of Birth:</strong> <span id="profile-dob"></span></p>
-            <p><strong>Occupation:</strong> <span id="profile-occupation"></span></p>
+            <p><strong>Gender:</strong> <span id="profile-gender"></span></p>
+            <p><strong>Contact Number:</strong> <span id="profile-contactNumber"></span></p>
             <button class="btn btn-primary" onclick="handleLogout()">Logout</button>
         </div>
     </div>

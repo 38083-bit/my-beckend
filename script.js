@@ -16,14 +16,18 @@ function showSelection() {
 async function handleSignup(event) {
     event.preventDefault();
 
+    const name = document.getElementById("signup-name").value.trim();
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value.trim();
+    const dateOfBirth = document.getElementById("signup-dob").value;
+    const gender = document.getElementById("signup-gender").value;
+    const contactNumber = document.getElementById("signup-contact").value.trim();
     const role = document.getElementById("signup-role").value;
 
     const response = await fetch("https://my-beckend-qqqo.onrender.com/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role })
+        body: JSON.stringify({ name, email, password, dateOfBirth, gender, contactNumber, role })
     });
 
     const data = await response.json();

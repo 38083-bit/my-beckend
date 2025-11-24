@@ -27,7 +27,8 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, required: true },
     name: { type: String, required: true },
     dateOfBirth: { type: Date, required: false },
-    occupation: { type: String, required: false }
+    gender: { type: String, required: false },
+    contactNumber: { type: String, required: false }
 });
 
 //const User = mongoose.model("User", UserSchema);
@@ -48,7 +49,7 @@ function authenticateToken(req, res, next) {
 
 // 🔹 SIGNUP API
 app.post('/api/signup', async (req, res) => {
-    const { email, password, role, name, dateOfBirth, occupation } = req.body;
+    const { email, password, role, name, dateOfBirth, gender, contactNumber } = req.body;
 
     if (!['athlete', 'sponsor'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
@@ -61,7 +62,7 @@ app.post('/api/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ email, password: hashedPassword, role, name, dateOfBirth, occupation });
+    const newUser = new User({ email, password: hashedPassword, role, name, dateOfBirth, gender, contactNumber });
     await newUser.save();
 
     res.json({ message: 'Signup successful! Please login.' });
