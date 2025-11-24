@@ -22,14 +22,31 @@ mongoose.connect("mongodb+srv://38083_db_user:Athlete2025@cluster0.9hqwsbq.mongo
 
 // MongoDB User Schema
 const UserSchema = new mongoose.Schema({
+       // Common fields
+    name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    dob: { type: Date, required: true },
+    gender: { type: String, required: true },
+    contact: { type: String, required: true },
+    state: { type: String, required: true },
     role: { type: String, required: true },
-    name: { type: String, required: true },
-    dateOfBirth: { type: Date, required: false },
-    gender: { type: String, required: false },
-    contactNumber: { type: String, required: false }
-});
+
+    // Athlete-specific fields
+    sports: String,
+    level: String,
+    disability: String,
+    achievements: String,
+    certificate: String, // file path
+    coach: String,
+
+    // Sponsor-specific fields
+    occupation: String,
+    organization: String,
+    authenticity: String,
+    sponsorshipType: String,
+    experience: Number
+}, { timestamps: true });
 
 //const User = mongoose.model("User", UserSchema);
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
@@ -46,6 +63,24 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
+
+const multer = require('multer');
+const path = require('path');
+
+// Configure where files should be stored
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/'); // folder where files are stored
+  },
+  filename: function(req, file, cb) {
+    // Make filename unique by adding timestamp
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+// Create Multer upload object
+const upload = multer({ storage: storage });
+
 
 // 🔹 SIGNUP API
 app.post('/api/signup', async (req, res) => {
@@ -67,6 +102,14 @@ app.post('/api/signup', async (req, res) => {
 
     res.json({ message: 'Signup successful! Please login.' });
 });
+// upload.single('certificate') means we expect a single file with field name 'certificate'
+app.post('/signup', upload.single('certificate'), async (req, res) => {
+    // Access file using req.file
+    console.log(req.file); // info about uploaded file
+
+    // You can now save req.file.path in the database
+});
+
 
 // 🔹 LOGIN API
 app.post('/api/login/:role', async (req, res) => {

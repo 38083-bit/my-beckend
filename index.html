@@ -321,6 +321,28 @@
             grid-template-columns: 1fr 1fr;
         }
 
+        #signup-form > .login-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 700px;
+            margin: auto;
+            padding: 0 1rem;
+            
+        }
+
+        /* Remove global flex display to prevent always showing signup form */
+        
+        /* Center only when the signup form is active */
+        #signup-form.login-form.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            margin: auto;
+            flex-direction: column;
+        }
+
         .login-option {
             padding: 3rem;
             text-align: center;
@@ -449,6 +471,21 @@
             .nav-links {
                 gap: 1rem;
             }
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
         }
 
         .page {
@@ -625,64 +662,125 @@
                         <p style="text-align: center; margin-top: 1rem; color: var(--gray);">Don't have an account? <a href="#" style="color: var(--primary);" onclick="showSignup()">Sign up</a></p>
                     </form>
                 </div>
-                <!-- Signup Form -->
+<!-- Signup Form -->
 <div id="signup-form" class="login-form">
     <button class="back-btn" onclick="showSelection()">← Back to selection</button>
     <h2>Sign Up</h2>
-    <form onsubmit="handleSignup(event)">
-        <!-- Name -->
+    <div class="login-container">
+    <form onsubmit="handleSignup(event)" enctype="multipart/form-data">
+        <!-- Common fields -->
         <div class="form-group">
             <label for="signup-name">Full Name</label>
-            <input type="text" id="signup-name" name="name" required placeholder="Your full name">
+            <input type="text" id="signup-name" name="name" placeholder="Full Name" required>
         </div>
-
-        <!-- Email -->
         <div class="form-group">
             <label for="signup-email">Email</label>
-            <input type="email" id="signup-email" name="email" required placeholder="you@example.com">
+            <input type="email" id="signup-email" name="email" placeholder="Email" required>
         </div>
-
-        <!-- Password -->
         <div class="form-group">
             <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" name="password" required placeholder="Enter your password">
+            <input type="password" id="signup-password" name="password" placeholder="Password" required>
         </div>
-
-        <!-- Date of Birth -->
         <div class="form-group">
             <label for="signup-dob">Date of Birth</label>
             <input type="date" id="signup-dob" name="dob" required>
         </div>
-
-        <!-- Gender -->
         <div class="form-group">
             <label for="signup-gender">Gender</label>
             <select id="signup-gender" name="gender" required>
-                <option value="" disabled selected>Select your gender</option>
+                <option disabled selected>Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
             </select>
         </div>
-
-        <!-- Contact Number -->
         <div class="form-group">
             <label for="signup-contact">Contact Number</label>
-            <input type="tel" id="signup-contact" name="contact" required placeholder="123-456-7890">
+            <input type="tel" id="signup-contact" name="contact" placeholder="Contact Number" required>
         </div>
-
-        <!-- Role -->
         <div class="form-group">
-            <label for="signup-role">Role</label>
-            <select id="signup-role" name="role" required>
-                <option value="" disabled selected>Select a role</option>
+            <label for="signup-state">State</label>
+            <input type="text" id="signup-state" name="state" placeholder="State" required>
+        </div>
+        <div class="form-group">
+            <label for="signup-role">Select Role</label>
+            <select id="signup-role" name="role" onchange="toggleRoleFields(this.value)" required>
+                <option disabled selected>Select Role</option>
                 <option value="athlete">Athlete</option>
                 <option value="sponsor">Sponsor</option>
             </select>
         </div>
 
+        <!-- Athlete Fields -->
+        <div id="athlete-fields" style="display:none;">
+            <div class="form-group">
+                <label for="signup-sports">Sports you play</label>
+                <input type="text" id="signup-sports" name="sports" placeholder="Sports you play">
+            </div>
+            <div class="form-group">
+                <label for="signup-level">Level of Play</label>
+                <select id="signup-level" name="level">
+                    <option disabled selected>Level of Play</option>
+                    <option value="school">School</option>
+                    <option value="college">College</option>
+                    <option value="professional">Professional</option>
+                    <option value="international">International</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="signup-disability">Disability?</label>
+                <select id="signup-disability" name="disability">
+                    <option value="none" selected>No</option>
+                    <option value="yes">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="signup-achievements">Achievements</label>
+                <textarea id="signup-achievements" name="achievements" placeholder="Achievements"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="signup-certificate">Certificate</label>
+                <input type="file" id="signup-certificate" name="certificate">
+            </div>
+            <div class="form-group">
+                <label for="signup-coach">Coach/Team Name</label>
+                <input type="text" id="signup-coach" name="coach" placeholder="Coach/Team Name">
+            </div>
+        </div>
+
+        <!-- Sponsor Fields -->
+        <div id="sponsor-fields" style="display:none;">
+            <div class="form-group">
+                <label for="signup-occupation">Occupation</label>
+                <input type="text" id="signup-occupation" name="occupation" placeholder="Occupation">
+            </div>
+            <div class="form-group">
+                <label for="signup-organization">Organization Name</label>
+                <input type="text" id="signup-organization" name="organization" placeholder="Organization Name">
+            </div>
+            <div class="form-group">
+                <label for="signup-authenticity">LinkedIn / Website</label>
+                <input type="url" id="signup-authenticity" name="authenticity" placeholder="LinkedIn / Website">
+            </div>
+            <div class="form-group">
+                <label for="signup-sponsorshipType">Interested in sponsoring (Athlete/Team/Event)</label>
+                <input type="text" id="signup-sponsorshipType" name="sponsorshipType" placeholder="Interested in sponsoring (Athlete/Team/Event)">
+            </div>
+            <div class="form-group">
+                <label for="signup-experience">Years of Experience</label>
+                <input type="number" id="signup-experience" name="experience" placeholder="Years of Experience">
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
     </form>
+    </div>
+<script>
+function toggleRoleFields(role) {
+    document.getElementById('athlete-fields').style.display = role === 'athlete' ? 'block' : 'none';
+    document.getElementById('sponsor-fields').style.display = role === 'sponsor' ? 'block' : 'none';
+}
+</script>
 </div>
 
             </div>
