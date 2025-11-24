@@ -1,14 +1,16 @@
 function showSignup() {
-    document.getElementById("athlete-form").style.display = "none";
-    document.getElementById("sponsor-form").style.display = "none";
-    document.getElementById("signup-form").style.display = "block";
+    document.getElementById("selection-view").style.display = "none";
+    document.querySelectorAll('.login-form').forEach(form => {
+        form.classList.remove('active');
+    });
+    document.getElementById("signup-form").classList.add('active');
 }
 
 function showSelection() {
-    document.getElementById("signup-form").style.display = "none";
-    document.getElementById("athlete-form").style.display = "none";
-    document.getElementById("sponsor-form").style.display = "none";
-    document.getElementById("selection-view").style.display = "block";
+    document.getElementById("selection-view").style.display = "contents";
+    document.querySelectorAll('.login-form').forEach(form => {
+        form.classList.remove('active');
+    });
 }
 
 async function handleSignup(event) {

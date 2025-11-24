@@ -622,38 +622,33 @@
                             <input type="password" id="sponsor-password" name="password" required placeholder="Enter your password">
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                        <p style="text-align: center; margin-top: 1rem; color: var(--gray);">Don't have an account? <a href="#" style="color: var(--primary);">Sign up</a></p>
+                        <p style="text-align: center; margin-top: 1rem; color: var(--gray);">Don't have an account? <a href="#" style="color: var(--primary);" onclick="showSignup()">Sign up</a></p>
                     </form>
                 </div>
                 <!-- Signup Form -->
-<div id="signup-form" class="login-form" style="display:none;">
-    <button class="back-btn" onclick="showSelection()">← Back to selection</button>
-    <h2>Create Account</h2>
-    
-    <form onsubmit="handleSignup(event)">
-        <div class="form-group">
-            <label for="signup-email">Email</label>
-            <input type="email" id="signup-email" required placeholder="Enter your email">
-        </div>
-
-        <div class="form-group">
-            <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" required placeholder="Enter your password">
-        </div>
-
-        <div class="form-group">
-            <label for="signup-role">Select Role</label>
-            <select id="signup-role" required>
-                <option value="">Choose role</option>
-                <option value="athlete">Athlete</option>
-                <option value="sponsor">Sponsor</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
-    </form>
-</div>
-
+                <div id="signup-form" class="login-form">
+                    <button class="back-btn" onclick="showSelection()">← Back to selection</button>
+                    <h2>Sign Up</h2>
+                    <form onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" name="email" required placeholder="you@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" name="password" required placeholder="Enter your password">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-role">Role</label>
+                            <select id="signup-role" name="role" required>
+                                <option value="" disabled selected>Select a role</option>
+                                <option value="athlete">Athlete</option>
+                                <option value="sponsor">Sponsor</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

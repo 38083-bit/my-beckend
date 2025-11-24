@@ -24,17 +24,31 @@ mongoose.connect("mongodb+srv://38083_db_user:Athlete2025@cluster0.9hqwsbq.mongo
 const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, required: true }
+    role: { type: String, required: true },
+    name: { type: String, required: true },
+    dateOfBirth: { type: Date, required: false },
+    occupation: { type: String, required: false }
 });
 
 //const User = mongoose.model("User", UserSchema);
 const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
-// 🔹 SIGNUP API
-//const User = require("./models/User");
+// JWT middleware for auth
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Token missing' });
 
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+        req.user = user;
+        next();
+    });
+}
+
+// 🔹 SIGNUP API
 app.post('/api/signup', async (req, res) => {
-    const { email, password, role } = req.body;
+    const { email, password, role, name, dateOfBirth, occupation } = req.body;
 
     if (!['athlete', 'sponsor'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
@@ -47,12 +61,11 @@ app.post('/api/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ email, password: hashedPassword, role });
+    const newUser = new User({ email, password: hashedPassword, role, name, dateOfBirth, occupation });
     await newUser.save();
 
     res.json({ message: 'Signup successful! Please login.' });
 });
-
 
 // 🔹 LOGIN API
 app.post('/api/login/:role', async (req, res) => {
@@ -80,6 +93,20 @@ app.post('/api/login/:role', async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// Profile API - Get current user's profile info
+app.get('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).select('-password -__v');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
     }
 });
 
