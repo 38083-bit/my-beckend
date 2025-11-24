@@ -5,13 +5,14 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+//const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'your-secret-key';  // Change this in production
 
 // Middleware
 app.use(cors());  // Allow frontend requests
 app.use(express.json());  // Parse JSON bodies
-app.use(express.static(path.join(__dirname, 'public')));  // Serve static files (put your HTML in 'public' folder)
+//app.use(express.static(path.join(__dirname, 'public')));  // Serve static files (put your HTML in 'public' folder)
 
 // In-memory user storage (replace with DB in production)
 let users = [
@@ -54,11 +55,12 @@ app.post('/api/login/:role', async (req, res) => {
 });
 
 // Serve the main HTML file
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Assuming your HTML is named 'index.html'
-});
+//app.get('/', (req, res) => {
+//    res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Assuming your HTML is named 'index.html'
+//});
 
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
+
 });
