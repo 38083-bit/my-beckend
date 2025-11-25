@@ -155,7 +155,7 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 });
 
 // Profile API - Update current user's profile info
-app.put('/api/profile', authenticateToken, async (req, res) => {
+app.put('/api/profile', authenticateToken,upload.single("certificate"),  async (req, res) => {
     console.log("PUT /api/profile called");
     console.log("User ID:", req.user?.id);
     console.log("Data received:", req.body);
@@ -184,3 +184,4 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+
