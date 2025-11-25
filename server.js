@@ -66,11 +66,18 @@ function authenticateToken(req, res, next) {
 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists or create it
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR);
+}
 
 // Configure where files should be stored
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, 'uploads/'); // folder where files are stored
+    cb(null, UPLOADS_DIR); // folder where files are stored
   },
   filename: function(req, file, cb) {
     // Make filename unique by adding timestamp
@@ -78,8 +85,21 @@ const storage = multer.diskStorage({
   }
 });
 
-// Create Multer upload object
-const upload = multer({ storage: storage });
+// Create Multer upload object with file filter and limits for safety
+const upload = multer({ 
+  storage: storage,
+  fileFilter: function(req, file, cb) {
+    // Accept only certain file types, e.g., pdf, images
+    const allowedExtensions = /\.(pdf|jpg|jpeg|png|gif)$/i;
+    if (!allowedExtensions.test(file.originalname)) {
+      return cb(new Error('Only PDF and image files are allowed for certificate'));
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5 MB file size limit
+  }
+});
 
 
 // 🔹 SIGNUP API
@@ -155,16 +175,33 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 });
 
 // Profile API - Update current user's profile info
-app.put('/api/profile', authenticateToken,upload.single("certificate"),  async (req, res) => {
+app.put('/api/profile', authenticateToken, upload.single("certificate"), async (req, res) => {
     console.log("PUT /api/profile called");
     console.log("User ID:", req.user?.id);
     console.log("Data received:", req.body);
 
     try {
         const userId = req.user.id;
-        const updateData = req.body;
+        const updateData = { ...req.body };
 
-        // Prevent updating email and password via this endpoint for now
+        // Include uploaded file path if certificate file uploaded
+        if (req.file) {
+            updateData.certificate = req.file.path; // Save file path for DB
+            console.log("Certificate file uploaded:", req.file.path);
+        }
+
+        // Convert dob field to Date if present
+        if (updateData.dob) {
+            const dobDate = new Date(updateData.dob);
+            if (!isNaN(dobDate)) {
+                updateData.dob = dobDate;
+            } else {
+                // Invalid date format sent
+                return res.status(400).json({ message: "Invalid date format for dob" });
+            }
+        }
+
+        // Prevent updating email and password via this endpoint
         delete updateData.email;
         delete updateData.password;
 
@@ -184,4 +221,3 @@ app.put('/api/profile', authenticateToken,upload.single("certificate"),  async (
 
 // Start Server
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
-

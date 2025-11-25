@@ -3,7 +3,15 @@ function showSignup() {
     document.querySelectorAll('.login-form').forEach(form => {
         form.classList.remove('active');
     });
-    document.getElementById("signup-form").classList.add('active');
+    const signupForm = document.getElementById("signup-form");
+    signupForm.classList.add('active');
+    signupForm.style.display = "block";
+    // Scroll signup form into view
+    signupForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Ensure login forms are hidden (already done above, but explicit)
+    // document.getElementById("signup-form").classList.remove("slide-left"); //add
+    // document.getElementById("login-form").classList.remove("active"); //add
+    // document.getElementById("login-form").classList.add("slide-left"); //add
 }
 
 function showSelection() {
@@ -11,7 +19,15 @@ function showSelection() {
     document.querySelectorAll('.login-form').forEach(form => {
         form.classList.remove('active');
     });
+    // Hide signup form explicitly since it doesn't have 'login-form' class
+    const signupForm = document.getElementById("signup-form");
+    if (signupForm) {
+        signupForm.classList.remove('active');
+        // Explicitly hide it to prevent it from showing on the selection page
+        signupForm.style.display = "none";
+    }
 }
+
 
 async function handleSignup(event) {
     event.preventDefault();
@@ -171,33 +187,24 @@ async function handleProfileUpdate(event) {
     const form = document.getElementById('profile-form');
     const formData = new FormData(form);
 
-    // Prepare a plain object for JSON body, excluding file for certificate (upload handling omitted)
-    const updateData = {};
+    // No longer skipping certificate file; send full formData including file (if any)
 
-    formData.forEach((value, key) => {
-        if (key === 'certificate') {
-            // Skip file input for now
-            return;
-        }
-        if (key === 'dob') {
-            updateData['dob'] = value ? new Date(value) : null;
-        } else {
-            updateData[key] = value;
-        }
-    });
+    // Convert dob field to string in YYYY-MM-DD if present (already string from input)
+    const dobValue = formData.get('dob');
+    if (dobValue) {
+        formData.set('dob', dobValue);
+    }
 
     try {
         const response = await fetch('https://my-beckend-qqqo.onrender.com/api/profile', {
             method: 'PUT',
             headers: {
-                //'Content-Type': 'application/json',
+                // Remove explicit Content-Type to allow multipart/form-data with boundary
                 'Authorization': 'Bearer ' + token
             },
-            //body: JSON.stringify(updateData)
-            body:formData
+            body: formData
         });
 
-        //const data = await response.json();
         const text = await response.text(); // Read raw response
         console.log(text);
 
@@ -205,7 +212,7 @@ async function handleProfileUpdate(event) {
         try {
             data = JSON.parse(text);
         } catch {
-            alert("Server returned non-JSON:\n" + text);
+            alert("Server returned non-JSON:\\n" + text);
             return;
         }
 
