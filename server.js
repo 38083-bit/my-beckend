@@ -84,7 +84,7 @@ const upload = multer({ storage: storage });
 
 // 🔹 SIGNUP API
 app.post('/api/signup', async (req, res) => {
-    const { email, password, role, name, dateOfBirth, gender, contactNumber } = req.body;
+    const { email, password, role, name, dob, gender, contact, state } = req.body;
 
     if (!['athlete', 'sponsor'].includes(role)) {
         return res.status(400).json({ message: 'Invalid role' });
@@ -97,7 +97,7 @@ app.post('/api/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ email, password: hashedPassword, role, name, dateOfBirth, gender, contactNumber });
+    const newUser = new User({ email, password: hashedPassword, role, name, dob, gender, contact, state });
     await newUser.save();
 
     res.json({ message: 'Signup successful! Please login.' });
@@ -149,6 +149,26 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+// Profile API - Update current user's profile info
+app.put('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const updateData = req.body;
+
+        // Prevent updating email and password via this endpoint for now
+        delete updateData.email;
+        delete updateData.password;
+
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true }).select('-password -__v');
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ message: 'Profile updated successfully', user: updatedUser });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }

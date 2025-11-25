@@ -792,15 +792,107 @@ function toggleRoleFields(role) {
 <!-- Profile Page -->
 <div id="profile" class="page">
     <div class="login-page">
-        <div class="login-container" style="max-width: 600px; padding: 2rem;">
+        <div class="login-container" style="max-width: 700px; padding: 2rem;">
             <h2>User Profile</h2>
-            <p><strong>Email:</strong> <span id="profile-email"></span></p>
-            <p><strong>Role:</strong> <span id="profile-role"></span></p>
-            <p><strong>Name:</strong> <span id="profile-name"></span></p>
-            <p><strong>Date of Birth:</strong> <span id="profile-dob"></span></p>
-            <p><strong>Gender:</strong> <span id="profile-gender"></span></p>
-            <p><strong>Contact Number:</strong> <span id="profile-contactNumber"></span></p>
-            <button class="btn btn-primary" onclick="handleLogout()">Logout</button>
+            <form id="profile-form" onsubmit="handleProfileUpdate(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" name="email" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="profile-role">Role</label>
+                    <input type="text" id="profile-role" name="role" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="profile-name">Full Name</label>
+                    <input type="text" id="profile-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-dob">Date of Birth</label>
+                    <input type="date" id="profile-dob" name="dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-gender">Gender</label>
+                    <select id="profile-gender" name="gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="profile-contact">Contact Number</label>
+                    <input type="tel" id="profile-contact" name="contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-state">State</label>
+                    <input type="text" id="profile-state" name="state" required>
+                </div>
+
+                <!-- Athlete Fields -->
+                <div id="profile-athlete-fields" style="display:none;">
+                    <div class="form-group">
+                        <label for="profile-sports">Sports you play</label>
+                        <input type="text" id="profile-sports" name="sports">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-level">Level of Play</label>
+                        <select id="profile-level" name="level">
+                            <option value="" disabled selected>Select Level</option>
+                            <option value="school">School</option>
+                            <option value="college">College</option>
+                            <option value="professional">Professional</option>
+                            <option value="international">International</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-disability">Disability</label>
+                        <select id="profile-disability" name="disability">
+                            <option value="none" selected>No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-achievements">Achievements</label>
+                        <textarea id="profile-achievements" name="achievements" placeholder="Achievements"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-certificate">Certificate</label>
+                        <input type="file" id="profile-certificate" name="certificate">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-coach">Coach/Team Name</label>
+                        <input type="text" id="profile-coach" name="coach" placeholder="Coach/Team Name">
+                    </div>
+                </div>
+
+                <!-- Sponsor Fields -->
+                <div id="profile-sponsor-fields" style="display:none;">
+                    <div class="form-group">
+                        <label for="profile-occupation">Occupation</label>
+                        <input type="text" id="profile-occupation" name="occupation" placeholder="Occupation">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-organization">Organization Name</label>
+                        <input type="text" id="profile-organization" name="organization" placeholder="Organization Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-authenticity">LinkedIn / Website</label>
+                        <input type="url" id="profile-authenticity" name="authenticity" placeholder="LinkedIn / Website">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-sponsorshipType">Interested in sponsoring (Athlete/Team/Event)</label>
+                        <input type="text" id="profile-sponsorshipType" name="sponsorshipType" placeholder="Interested in sponsoring (Athlete/Team/Event)">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-experience">Years of Experience</label>
+                        <input type="number" id="profile-experience" name="experience" placeholder="Years of Experience">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Update Profile</button>
+                <button type="button" class="btn btn-outline" style="margin-top: 1rem; margin-left: 10px;" onclick="handleLogout()">Logout</button>
+            </form>
         </div>
     </div>
 </div>
