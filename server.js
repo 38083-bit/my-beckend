@@ -156,6 +156,10 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 
 // Profile API - Update current user's profile info
 app.put('/api/profile', authenticateToken, async (req, res) => {
+    console.log("PUT /api/profile called");
+    console.log("User ID:", req.user?.id);
+    console.log("Data received:", req.body);
+
     try {
         const userId = req.user.id;
         const updateData = req.body;
@@ -165,11 +169,15 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
         delete updateData.password;
 
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true }).select('-password -__v');
+        console.log("After update:", updatedUser);
+
         if (!updatedUser) {
+            console.log("User not found");
             return res.status(404).json({ message: 'User not found' });
         }
         res.json({ message: 'Profile updated successfully', user: updatedUser });
     } catch (error) {
+        console.error("ERROR IN PUT ROUTE:", error);
         res.status(500).json({ message: 'Server error', error });
     }
 });
